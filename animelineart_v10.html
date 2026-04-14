@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>See More</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rubik+Wet+Paint&family=DM+Mono:wght@300;400;500&display=swap');
+
+    :root {
+      --teal: #007373;
+      --teal-light: #009e9e;
+      --teal-dark: #004f4f;
+      --plum: #5D005D;
+      --plum-light: #8a1a8a;
+      --plum-glow: rgba(93, 0, 93, 0.35);
+      --green: #7ec882;
+      --green-light: #a8e5ab;
+      --green-dark: #4a9e4e;
+      --bg: #0b1210;
+      --bg-card: rgba(0, 115, 115, 0.06);
+      --text: #d4e8e0;
+      --text-dim: #6a8a80;
+      --border: rgba(0, 115, 115, 0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.3;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.06'/%3E%3C/svg%3E");
+    }
+
+    #landing {
+      min-height: 100dvh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem; position: relative;
+    }
+
+    .atmosphere { position: absolute; inset: 0; overflow: hidden; }
+    .atmosphere::before {
+      content: '';
+      position: absolute; width: 140%; height: 140%; top: -20%; left: -20%;
+      background:
+        radial-gradient(ellipse at 25% 15%, rgba(0, 115, 115, 0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 85%, rgba(93, 0, 93, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(126, 200, 130, 0.04) 0%, transparent 60%);
+      animation: atmos 25s ease-in-out infinite alternate;
+    }
+    @keyframes atmos { to { transform: translate(-3%, 2%) scale(1.05); } }
+
+    .grid-lines {
+      position: absolute; inset: 0; overflow: hidden; opacity: 0.04;
+      background-image:
+        linear-gradient(var(--teal) 1px, transparent 1px),
+        linear-gradient(90deg, var(--teal) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .brand {
+      position: relative; z-index: 1; text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .brand h1 {
+      font-family: 'Rubik Wet Paint', system-ui;
+      font-weight: 400;
+      font-size: clamp(3.5rem, 15vw, 9rem);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      color: var(--green);
+      text-shadow:
+        0 0 80px rgba(126, 200, 130, 0.12),
+        0 0 160px rgba(0, 115, 115, 0.06);
+      animation: heroIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(40px) scale(0.96); filter: blur(12px); }
+    }
+
+    .brand .tagline {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.5em; text-transform: uppercase;
+      color: var(--teal-light); margin-top: 1.2rem;
+      animation: fadeIn 1s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } }
+
+    .accent-line {
+      width: 40px; height: 2px; margin: 1.2rem auto 0;
+      background: linear-gradient(90deg, var(--plum), var(--teal));
+      border-radius: 1px;
+      animation: fadeIn 1s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .card {
+      position: relative; z-index: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1.2rem; padding: 2rem;
+      max-width: 380px; width: 100%;
+      backdrop-filter: blur(24px);
+      animation: fadeIn 1s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .card p {
+      font-size: 0.8rem; line-height: 1.8;
+      color: var(--text-dim); margin-bottom: 1.5rem;
+    }
+    .card p strong { color: var(--green-light); }
+
+    .launch-btn {
+      display: block; width: 100%; padding: 1rem;
+      background: var(--plum);
+      color: var(--text);
+      border: none; border-radius: 0.6rem;
+      font-family: 'DM Mono', monospace; font-weight: 500;
+      font-size: 0.9rem; letter-spacing: 0.08em;
+      text-transform: uppercase; cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative; overflow: hidden;
+    }
+    .launch-btn:active { transform: scale(0.97); }
+    .launch-btn:hover {
+      background: var(--plum-light);
+      box-shadow: 0 0 40px var(--plum-glow);
+    }
+    .launch-btn:disabled { opacity: 0.5; cursor: wait; }
+    .launch-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
+      transform: translateX(-100%); transition: transform 0.7s;
+    }
+    .launch-btn:hover::after { transform: translateX(100%); }
+
+    .progress-wrap {
+      width: 100%; margin: 1rem 0;
+      background: rgba(93, 0, 93, 0.12);
+      border-radius: 0.5rem; overflow: hidden; height: 4px;
+      display: none;
+    }
+    .progress-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--plum), var(--green));
+      border-radius: 0.5rem; transition: width 0.3s;
+    }
+    .progress-text {
+      font-size: 0.65rem; color: var(--text-dim);
+      text-align: center; margin-top: 0.4rem; display: none;
+    }
+
+    .footer-note {
+      position: relative; z-index: 1;
+      margin-top: 2rem; font-size: 0.6rem;
+      color: var(--text-dim); opacity: 0.5; text-align: center;
+      animation: fadeIn 1s 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .error-msg {
+      color: #e06060; font-size: 0.75rem;
+      text-align: center; margin-top: 0.8rem; display: none;
+    }
+
+    #ar-container { display: none; position: fixed; inset: 0; z-index: 100; }
+    #ar-container.active { display: block; }
+    .ar-hud {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 1rem; display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(to bottom, rgba(11,18,16,0.8) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .ar-hud > * { pointer-events: auto; }
+    .ar-hud .tag {
+      font-family: 'Rubik Wet Paint', system-ui; font-weight: 400;
+      font-size: 0.8rem; color: var(--green);
+    }
+    .close-btn {
+      width: 42px; height: 42px;
+      background: rgba(93, 0, 93, 0.25);
+      border: 1px solid rgba(126, 200, 130, 0.2);
+      border-radius: 50%; color: var(--text); font-size: 1.3rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(12px); transition: all 0.3s;
+    }
+    .close-btn:hover { background: rgba(0, 115, 115, 0.3); border-color: var(--teal-light); }
+    .scan-prompt {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 200;
+      background: rgba(11,18,16,0.8); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 2rem;
+      padding: 0.7rem 1.5rem; font-size: 0.7rem;
+      color: var(--text-dim); text-align: center;
+      animation: breathe 2.5s ease-in-out infinite;
+    }
+    .scan-prompt em { color: var(--green); font-style: normal; }
+    @keyframes breathe { 0%,100%{ opacity:0.6; } 50%{ opacity:1; } }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <div id="landing">
+    <div class="atmosphere"></div>
+    <div class="grid-lines"></div>
+    <div class="brand">
+      <h1>See<br>More</h1>
+      <p class="tagline">Augmented Reality &bull; Street Art</p>
+      <div class="accent-line"></div>
+    </div>
+    <div class="card">
+      <p>This wall has more to say. Tap below, then <strong>point your camera at the artwork</strong> to see the hidden layer.</p>
+      <button class="launch-btn" id="btn-go" onclick="startAR()">Open Camera</button>
+      <div class="progress-wrap" id="pw"><div class="progress-bar" id="pb"></div></div>
+      <div class="progress-text" id="pt"></div>
+      <div class="error-msg" id="err"></div>
+    </div>
+    <p class="footer-note">Camera access required &middot; All processing happens on your device</p>
+  </div>
+
+  <div id="ar-container">
+    <div class="ar-hud">
+      <span class="tag">See More</span>
+      <button class="close-btn" onclick="closeAR()">&times;</button>
+    </div>
+    <div class="scan-prompt">Point at the <em>artwork</em></div>
+  </div>
+
+  <script>
+    // ══════════════════════════════════════════════════════════════
+    //  ARTWORK CONFIGURATION
+    //  ─────────────────────
+    //  Each entry needs:
+    //    image  — path to the target photo (relative to this file)
+    //    layers — array of { tag, attrs, children? }
+    //
+    //  Example:
+    //  {
+    //    image: "assets/targets/mural.jpg",
+    //    layers: [
+    //      {
+    //        tag: "a-entity",
+    //        attrs: {
+    //          geometry: "primitive: torus; radius: 0.2; radiusTubular: 0.015",
+    //          material: "color: #007373; emissive: #007373; emissiveIntensity: 0.4",
+    //          position: "0 0 0.15",
+    //          animation: "property: rotation; to: 360 360 0; loop: true; dur: 6000; easing: linear"
+    //        }
+    //      }
+    //    ]
+    //  }
+    // ══════════════════════════════════════════════════════════════
+
+    const ARTWORKS = [
+    {
+        "image": "assets/targets/AnimeLineart_v10.png",
+        "layers": [
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0162",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.271 -0.115 0.205",
+                    "animation": "property: position; to: -0.281 -0.111 0.225; loop: true; dir: alternate; dur: 2726; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2926"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0196",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.224 -0.049 0.201",
+                    "animation": "property: position; to: 0.266 -0.054 0.221; loop: true; dir: alternate; dur: 1514; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1714"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0113",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.299 0.283 0.152",
+                    "animation": "property: position; to: 0.306 0.239 0.172; loop: true; dir: alternate; dur: 1604; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1804"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0192",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.109 0.245 0.146",
+                    "animation": "property: position; to: -0.090 0.264 0.166; loop: true; dir: alternate; dur: 1539; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1739"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0052",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.056 -0.173 0.240",
+                    "animation": "property: position; to: 0.068 -0.135 0.260; loop: true; dir: alternate; dur: 2303; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2503"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0182",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.241 0.076 0.196",
+                    "animation": "property: position; to: 0.275 0.101 0.216; loop: true; dir: alternate; dur: 2755; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2955"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0194",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.068 0.164 0.129",
+                    "animation": "property: position; to: -0.028 0.193 0.149; loop: true; dir: alternate; dur: 1823; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2023"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0140",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.093 0.099 0.124",
+                    "animation": "property: position; to: 0.058 0.147 0.144; loop: true; dir: alternate; dur: 1597; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1797"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0162",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.256 -0.272 0.153",
+                    "animation": "property: position; to: 0.257 -0.262 0.173; loop: true; dir: alternate; dur: 2676; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2876"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0169",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.283 -0.022 0.234",
+                    "animation": "property: position; to: 0.258 -0.030 0.254; loop: true; dir: alternate; dur: 2263; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2463"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0053",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.141 -0.034 0.179",
+                    "animation": "property: position; to: -0.186 -0.062 0.199; loop: true; dir: alternate; dur: 2410; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2610"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0103",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.007 -0.035 0.131",
+                    "animation": "property: position; to: -0.028 -0.036 0.151; loop: true; dir: alternate; dur: 2568; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2768"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0144",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.060 -0.182 0.221",
+                    "animation": "property: position; to: 0.038 -0.179 0.241; loop: true; dir: alternate; dur: 1972; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2172"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0097",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.231 0.134 0.172",
+                    "animation": "property: position; to: 0.184 0.173 0.192; loop: true; dir: alternate; dur: 2394; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2594"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0164",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.011 -0.101 0.142",
+                    "animation": "property: position; to: -0.010 -0.081 0.162; loop: true; dir: alternate; dur: 2208; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2408"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0194",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.085 -0.091 0.147",
+                    "animation": "property: position; to: -0.109 -0.102 0.167; loop: true; dir: alternate; dur: 2478; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2678"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0135",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.171 -0.078 0.154",
+                    "animation": "property: position; to: 0.166 -0.063 0.174; loop: true; dir: alternate; dur: 2630; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2830"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0071",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.174 -0.277 0.157",
+                    "animation": "property: position; to: -0.215 -0.267 0.177; loop: true; dir: alternate; dur: 1969; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2169"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0183",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.090 -0.001 0.115",
+                    "animation": "property: position; to: -0.113 0.011 0.135; loop: true; dir: alternate; dur: 1951; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2151"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0154",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.087 0.011 0.151",
+                    "animation": "property: position; to: 0.135 0.002 0.171; loop: true; dir: alternate; dur: 1898; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2098"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0151",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.219 -0.288 0.125",
+                    "animation": "property: position; to: 0.201 -0.246 0.145; loop: true; dir: alternate; dur: 2085; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2285"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0124",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.239 -0.116 0.181",
+                    "animation": "property: position; to: 0.265 -0.082 0.201; loop: true; dir: alternate; dur: 2397; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2597"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0122",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.153 0.241 0.153",
+                    "animation": "property: position; to: -0.120 0.264 0.173; loop: true; dir: alternate; dur: 1660; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1860"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0157",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.120 0.063 0.186",
+                    "animation": "property: position; to: 0.106 0.018 0.206; loop: true; dir: alternate; dur: 2864; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3064"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0151",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.296 0.284 0.221",
+                    "animation": "property: position; to: -0.272 0.315 0.241; loop: true; dir: alternate; dur: 1674; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1874"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0107",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.096 -0.300 0.105",
+                    "animation": "property: position; to: -0.125 -0.349 0.125; loop: true; dir: alternate; dur: 2651; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2851"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0099",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.075 -0.099 0.110",
+                    "animation": "property: position; to: 0.044 -0.077 0.130; loop: true; dir: alternate; dur: 2606; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2806"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0143",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.056 -0.111 0.182",
+                    "animation": "property: position; to: -0.074 -0.127 0.202; loop: true; dir: alternate; dur: 1755; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1955"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0111",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.135 -0.129 0.189",
+                    "animation": "property: position; to: 0.108 -0.141 0.209; loop: true; dir: alternate; dur: 2044; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2244"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0100",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.031 0.265 0.164",
+                    "animation": "property: position; to: 0.009 0.238 0.184; loop: true; dir: alternate; dur: 2597; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2797"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0082",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.202 0.098 0.229",
+                    "animation": "property: position; to: -0.228 0.129 0.249; loop: true; dir: alternate; dur: 2809; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3009"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0082",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.275 -0.171 0.125",
+                    "animation": "property: position; to: -0.272 -0.174 0.145; loop: true; dir: alternate; dur: 2807; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3007"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0170",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.150 0.129 0.244",
+                    "animation": "property: position; to: -0.199 0.155 0.264; loop: true; dir: alternate; dur: 2544; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2744"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0188",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.192 -0.052 0.133",
+                    "animation": "property: position; to: 0.232 -0.094 0.153; loop: true; dir: alternate; dur: 1697; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1897"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0075",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.281 -0.056 0.183",
+                    "animation": "property: position; to: 0.245 -0.084 0.203; loop: true; dir: alternate; dur: 2074; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2274"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0163",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.017 0.223 0.231",
+                    "animation": "property: position; to: -0.053 0.234 0.251; loop: true; dir: alternate; dur: 1833; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2033"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0180",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.233 -0.117 0.209",
+                    "animation": "property: position; to: 0.235 -0.109 0.229; loop: true; dir: alternate; dur: 1590; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1790"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0167",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.285 0.268 0.166",
+                    "animation": "property: position; to: 0.318 0.282 0.186; loop: true; dir: alternate; dur: 1562; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1762"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0141",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.101 -0.150 0.237",
+                    "animation": "property: position; to: 0.123 -0.181 0.257; loop: true; dir: alternate; dur: 1555; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1755"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0177",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.200 0.111 0.135",
+                    "animation": "property: position; to: -0.191 0.090 0.155; loop: true; dir: alternate; dur: 2524; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2724"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0065",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.089 -0.289 0.244",
+                    "animation": "property: position; to: 0.099 -0.300 0.264; loop: true; dir: alternate; dur: 2102; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2302"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0195",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.108 -0.294 0.129",
+                    "animation": "property: position; to: 0.102 -0.260 0.149; loop: true; dir: alternate; dur: 2971; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3171"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0085",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.139 0.072 0.221",
+                    "animation": "property: position; to: 0.147 0.059 0.241; loop: true; dir: alternate; dur: 2838; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3038"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0087",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.089 0.101 0.104",
+                    "animation": "property: position; to: 0.137 0.133 0.124; loop: true; dir: alternate; dur: 2671; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2871"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0174",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.014 0.244 0.201",
+                    "animation": "property: position; to: 0.038 0.245 0.221; loop: true; dir: alternate; dur: 1865; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2065"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0153",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.063 -0.200 0.118",
+                    "animation": "property: position; to: 0.044 -0.231 0.138; loop: true; dir: alternate; dur: 2724; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2924"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0080",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.140 -0.077 0.149",
+                    "animation": "property: position; to: 0.167 -0.126 0.169; loop: true; dir: alternate; dur: 1860; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2060"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0084",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.007 0.183 0.160",
+                    "animation": "property: position; to: -0.052 0.148 0.180; loop: true; dir: alternate; dur: 2200; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2400"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0111",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.295 -0.122 0.137",
+                    "animation": "property: position; to: 0.326 -0.102 0.157; loop: true; dir: alternate; dur: 2915; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3115"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0051",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.037 0.088 0.103",
+                    "animation": "property: position; to: -0.052 0.084 0.123; loop: true; dir: alternate; dur: 2215; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2415"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0117",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.001 0.163 0.232",
+                    "animation": "property: position; to: -0.030 0.174 0.252; loop: true; dir: alternate; dur: 1587; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1787"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0108",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.028 0.230 0.199",
+                    "animation": "property: position; to: 0.014 0.203 0.219; loop: true; dir: alternate; dur: 2672; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2872"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0136",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.215 -0.029 0.173",
+                    "animation": "property: position; to: -0.201 -0.065 0.193; loop: true; dir: alternate; dur: 2304; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2504"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0153",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.231 0.210 0.148",
+                    "animation": "property: position; to: -0.272 0.183 0.168; loop: true; dir: alternate; dur: 2069; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2269"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0110",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.051 0.185 0.144",
+                    "animation": "property: position; to: 0.096 0.216 0.164; loop: true; dir: alternate; dur: 2612; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2812"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0051",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.184 -0.060 0.117",
+                    "animation": "property: position; to: 0.230 -0.038 0.137; loop: true; dir: alternate; dur: 1649; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1849"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0103",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.213 0.242 0.183",
+                    "animation": "property: position; to: 0.232 0.243 0.203; loop: true; dir: alternate; dur: 2817; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3017"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0128",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.079 0.169 0.199",
+                    "animation": "property: position; to: 0.082 0.122 0.219; loop: true; dir: alternate; dur: 2287; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2487"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0075",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.278 -0.030 0.246",
+                    "animation": "property: position; to: -0.271 -0.074 0.266; loop: true; dir: alternate; dur: 1723; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1923"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0160",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.159 -0.163 0.243",
+                    "animation": "property: position; to: -0.163 -0.188 0.263; loop: true; dir: alternate; dur: 2788; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2988"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0088",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.256 0.130 0.188",
+                    "animation": "property: position; to: 0.211 0.156 0.208; loop: true; dir: alternate; dur: 2487; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2687"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0117",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.071 0.131 0.180",
+                    "animation": "property: position; to: 0.022 0.081 0.200; loop: true; dir: alternate; dur: 2558; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2758"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0152",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.136 0.067 0.250",
+                    "animation": "property: position; to: 0.115 0.109 0.270; loop: true; dir: alternate; dur: 1996; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2196"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0171",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.006 -0.164 0.220",
+                    "animation": "property: position; to: 0.011 -0.169 0.240; loop: true; dir: alternate; dur: 1609; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1809"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0152",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.038 0.077 0.124",
+                    "animation": "property: position; to: 0.044 0.092 0.144; loop: true; dir: alternate; dur: 2803; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3003"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0126",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.244 0.087 0.118",
+                    "animation": "property: position; to: -0.292 0.042 0.138; loop: true; dir: alternate; dur: 1973; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2173"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0162",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.018 0.040 0.233",
+                    "animation": "property: position; to: -0.046 0.048 0.253; loop: true; dir: alternate; dur: 2638; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2838"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0157",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.259 -0.146 0.213",
+                    "animation": "property: position; to: -0.268 -0.118 0.233; loop: true; dir: alternate; dur: 1682; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1882"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0104",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.266 0.289 0.238",
+                    "animation": "property: position; to: 0.272 0.254 0.258; loop: true; dir: alternate; dur: 2290; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2490"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0099",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "0.259 0.264 0.103",
+                    "animation": "property: position; to: 0.292 0.268 0.123; loop: true; dir: alternate; dur: 1683; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1883"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0159",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.177 -0.175 0.205",
+                    "animation": "property: position; to: -0.191 -0.143 0.225; loop: true; dir: alternate; dur: 2809; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3009"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0138",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.204 0.043 0.127",
+                    "animation": "property: position; to: -0.181 0.041 0.147; loop: true; dir: alternate; dur: 1606; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 1806"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0169",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.052 0.086 0.217",
+                    "animation": "property: position; to: -0.101 0.085 0.237; loop: true; dir: alternate; dur: 2659; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2859"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0181",
+                    "color": "#00e5ff",
+                    "emissive": "#00e5ff",
+                    "emissive-intensity": "0.5",
+                    "position": "0.185 0.036 0.147",
+                    "animation": "property: position; to: 0.229 0.028 0.167; loop: true; dir: alternate; dur: 2939; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 3139"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0104",
+                    "color": "#f0ece4",
+                    "emissive": "#f0ece4",
+                    "emissive-intensity": "0.5",
+                    "position": "0.208 -0.067 0.248",
+                    "animation": "property: position; to: 0.168 -0.079 0.268; loop: true; dir: alternate; dur: 2798; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2998"
+                }
+            },
+            {
+                "tag": "a-sphere",
+                "attrs": {
+                    "radius": "0.0092",
+                    "color": "#ff3c00",
+                    "emissive": "#ff3c00",
+                    "emissive-intensity": "0.5",
+                    "position": "-0.113 0.060 0.112",
+                    "animation": "property: position; to: -0.149 0.058 0.132; loop: true; dir: alternate; dur: 2313; easing: easeInOutSine",
+                    "animation__fade": "property: material.opacity; from: 0.3; to: 1; loop: true; dir: alternate; dur: 2513"
+                }
+            }
+        ]
+    }
+];
+
+    // ══════════════════════════════════════════════════════════════
+
+    function $(id) { return document.getElementById(id); }
+    function showError(msg) { var e = $('err'); e.textContent = msg; e.style.display = 'block'; }
+    function setProgress(pct, text) {
+      $('pw').style.display = 'block'; $('pt').style.display = 'block';
+      $('pb').style.width = pct + '%'; $('pt').textContent = text;
+    }
+    function resetUI() {
+      var b = $('btn-go'); b.disabled = false; b.textContent = 'Open Camera';
+      $('pw').style.display = 'none'; $('pt').style.display = 'none'; $('err').style.display = 'none';
+    }
+    function loadScript(url) {
+      return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = url; s.onload = resolve;
+        s.onerror = function() { reject(new Error('Failed to load: ' + url)); };
+        document.head.appendChild(s);
+      });
+    }
+
+    var libsReady = false;
+    async function loadLibs() {
+      if (libsReady) return;
+      await loadScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js');
+      await loadScript('https://aframe.io/releases/1.5.0/aframe.min.js');
+      await loadScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js');
+      libsReady = true;
+    }
+
+    async function startAR() {
+      $('err').style.display = 'none';
+      if (!ARTWORKS.length) { showError('No artworks configured. Add entries to the ARTWORKS array in the HTML.'); return; }
+      var btn = $('btn-go'); btn.disabled = true; btn.textContent = 'Loading\u2026';
+      try {
+        setProgress(2, 'Loading AR engine\u2026');
+        await loadLibs();
+        setProgress(5, 'Loading artwork images\u2026');
+        var images = [];
+        for (var i = 0; i < ARTWORKS.length; i++) {
+          var img = await new Promise(function(resolve, reject) {
+            var el = new Image(); el.crossOrigin = 'anonymous';
+            el.onload = function() { resolve(el); };
+            el.onerror = function() { reject(new Error('Could not load: ' + ARTWORKS[i].image)); };
+            el.src = ARTWORKS[i].image;
+          });
+          images.push(img);
+        }
+        setProgress(10, 'Preparing AR engine\u2026');
+        var compiler = new window.MINDAR.IMAGE.Compiler();
+        await compiler.compileImageTargets(images, function(progress) {
+          setProgress(10 + Math.round(progress * 85), 'Recognizing artwork\u2026 ' + Math.round(progress * 100) + '%');
+        });
+        var buffer = await compiler.exportData();
+        var mindURL = URL.createObjectURL(new Blob([buffer]));
+        setProgress(100, 'Starting camera\u2026');
+        setTimeout(function() { launchScene(mindURL); }, 250);
+      } catch (e) {
+        console.error(e); showError(e.message || 'Something went wrong.');
+        btn.disabled = false; btn.textContent = 'Open Camera';
+      }
+    }
+
+    function buildEntity(def) {
+      var el = document.createElement(def.tag);
+      if (def.attrs) { var k = Object.keys(def.attrs); for (var i = 0; i < k.length; i++) el.setAttribute(k[i], def.attrs[k[i]]); }
+      if (def.children) { for (var j = 0; j < def.children.length; j++) { var c = buildEntity(def.children[j]); if (c) el.appendChild(c); } }
+      return el;
+    }
+
+    function launchScene(mindURL) {
+      $('landing').style.display = 'none';
+      var ct = $('ar-container'); ct.classList.add('active');
+      var scene = document.createElement('a-scene');
+      scene.setAttribute('mindar-image', 'imageTargetSrc: ' + mindURL + '; autoStart: true; uiScanning: no;');
+      scene.setAttribute('color-space', 'sRGB');
+      scene.setAttribute('renderer', 'colorManagement: true; physicallyCorrectLights: true;');
+      scene.setAttribute('vr-mode-ui', 'enabled: false');
+      scene.setAttribute('device-orientation-permission-ui', 'enabled: false');
+      var cam = document.createElement('a-camera');
+      cam.setAttribute('position', '0 0 0'); cam.setAttribute('look-controls', 'enabled: false');
+      scene.appendChild(cam);
+      for (var i = 0; i < ARTWORKS.length; i++) {
+        var anchor = document.createElement('a-entity');
+        anchor.setAttribute('mindar-image-target', 'targetIndex: ' + i);
+        for (var j = 0; j < ARTWORKS[i].layers.length; j++) {
+          var entity = buildEntity(ARTWORKS[i].layers[j]);
+          if (entity) anchor.appendChild(entity);
+        }
+        scene.appendChild(anchor);
+      }
+      ct.appendChild(scene);
+    }
+
+    function closeAR() {
+      var ct = $('ar-container');
+      var scene = ct.querySelector('a-scene');
+      if (scene) { try { scene.components['mindar-image-system'].stop(); } catch(e) {} scene.remove(); }
+      ct.classList.remove('active'); $('landing').style.display = ''; resetUI();
+    }
+  </script>
+</body>
+</html>
